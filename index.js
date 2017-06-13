@@ -50,6 +50,12 @@ module.exports = {
             LinvoDB.dbPath = options.dbPath;
 
             return {
+                on: (event, callback) =>
+                {
+                    console.log(event, 'event registered');
+
+                    // FIXME Register event handlers ('error', ...).
+                },
                 model: (name, schema, options) =>
                 {
                     // if (!('_hooks' in schema))
