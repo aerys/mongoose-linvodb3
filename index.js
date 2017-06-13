@@ -3,9 +3,11 @@ const LinvoDB = require('linvodb3');
 
 module.exports = {
     install: function() {
-        mongoose.schema = (schema, options) =>
+
+        function SchemaConstructor(schema, options)
         {
-            return Object.assign(schema, {
+            Object.assign(this, {
+                schema: schema,
                 _hooks: [],
                 _virtuals: {},
                 pre: function(action, callback) {
@@ -45,6 +47,9 @@ module.exports = {
             });
         };
 
+        // Override mongoose.Schema constructor.
+        mongoose.Schema = SchemaConstructor;
+
         mongoose.createConnection = (uri, options) =>
         {
             LinvoDB.dbPath = options.dbPath;
@@ -56,12 +61,12 @@ module.exports = {
 
                     // FIXME Register event handlers ('error', ...).
                 },
-                model: (name, schema, options) =>
+                Model: (name, schema, options) =>
                 {
                     // if (!('_hooks' in schema))
                     //     schema = mongoose.schema(name, schema, options);
 
-                    const model = new LinvoDB(name, schema, options || {});
+                    const model = new LinvoDB(name, schema.schema, options || {});
 
                     for (const hook of schema._hooks)
                         hook(model);
