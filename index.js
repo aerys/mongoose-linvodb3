@@ -11,11 +11,23 @@ module.exports = {
                 pre: function(action, callback) {
                     if (action === 'find')
                         return this._hooks.push((model) => model.on('find', (result) => callback(result, () => null)));
+                    if (action === 'insert')
+                        return this._hooks.push((model) => model.on('insert', (result) => callback.apply(result, [() => null])));
                     if (action === 'save')
                         return this._hooks.push((model) => model.on('save', (result) => callback.apply(result, [() => null])));
+                    if (action === 'remove')
+                        return this._hooks.push((model) => model.on('remove', (result) => callback.apply(result, [() => null])));
                     throw 'Hook action ' + action + ' is unimplemented.';
                 },
                 post: function(action, callback) {
+                    if (action === 'find')
+                        return this._hooks.push((model) => model.on('find', (result) => callback.apply(result, [() => null])));
+                    if (action === 'insert')
+                        return this._hooks.push((model) => model.on('inserted', (result) => callback.apply(result, [() => null])));
+                    if (action === 'save')
+                        return this._hooks.push((model) => model.on('updated', (result) => callback.apply(result, [() => null])));
+                    if (action === 'remove')
+                        return this._hooks.push((model) => model.on('removed', (result) => callback.apply(result, [() => null])));
                     throw 'Hook action ' + action + ' is unimplemented.';
                 },
                 virtual: function(propertyName) {
@@ -58,19 +70,23 @@ module.exports = {
                         }
                     });
 
-                    // FIXME Define generic wrapper for all find methods.
+                    const findWrapper = function(funcName) {
+                        const fn = model[funcName];
 
-                    const findOne = model.findOne;
+                        model[funcName] = function(query, callback) {
+                            return fn.apply(this, [query, (error, result) =>
+                                {
+                                    model.emit('find', result);
 
-                    model.findOne = function(query, callback) {
-                        return findOne.apply(this, [query, (error, result) =>
-                            {
-                                model.emit('find', result);
+                                    return callback(error, result);
+                                }
+                            ]);
+                        };
+                    };
 
-                                return callback(error, result);
-                            }]
-                        );
-                    }
+                    findWrapper('find');
+                    findWrapper('findById');
+                    findWrapper('findOne');
 
                     return model;
                 }
