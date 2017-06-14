@@ -4,8 +4,8 @@ const LinvoDB = require('linvodb3');
 
 module.exports = {
     install: function() {
-        function SchemaConstructor(schema, options)
-        {
+
+        function SchemaConstructor(schema, options) {
             Object.assign(this, {
                 schema: schema,
                 _hooks: [],
@@ -59,23 +59,23 @@ module.exports = {
         // Override mongoose.Schema constructor.
         mongoose.Schema = SchemaConstructor;
 
-        mongoose.Schema.Types = {
+        mongoose.Schema.Types = Object.assign(mongoose.Schema.Types || {}, {
             ObjectId: bson.ObjectID
-        };
+        });
 
-        mongoose.createConnection = (uri, options) =>
-        {
+        mongoose.createConnection = (uri, options) => {
             LinvoDB.dbPath = options.dbPath;
 
             return {
-                on: (event, callback) =>
-                {
+                close: () => {
+                    // FIXME
+                },
+                on: (event, callback) => {
                     console.log(event, 'event registered');
 
                     // FIXME Register event handlers ('error', ...).
                 },
-                model: (name, schema, options) =>
-                {
+                model: (name, schema, options) => {
                     // if (!('_hooks' in schema))
                     //     schema = mongoose.schema(name, schema, options);
 
@@ -85,8 +85,7 @@ module.exports = {
                         hook(model);
 
                     model.on('construct', function(doc) {
-                        for (const propertyName in schema._virtuals)
-                        {
+                        for (const propertyName in schema._virtuals) {
                             if (!!schema._virtuals[propertyName]._getter)
                                 doc.__defineGetter__(propertyName, schema._virtuals[propertyName]._getter);
                             if (!!schema._virtuals[propertyName]._setter)
@@ -98,8 +97,7 @@ module.exports = {
                         const fn = model[funcName];
 
                         model[funcName] = function(query, callback) {
-                            return fn.apply(this, [query, (error, result) =>
-                                {
+                            return fn.apply(this, [query, (error, result) => {
                                     model.emit('find', result);
 
                                     if (!!callback)
