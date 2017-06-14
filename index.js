@@ -49,8 +49,7 @@ module.exports = {
                     }
                 },
                 set: function(param, value) {
-                    // Setter for options.
-                    // Not handled by LinvoDB.
+                    // FIXME Setter for options.
 
                     console.log('schema param', param, 'set to', value);
                 }
@@ -117,6 +116,17 @@ module.exports = {
                     return model;
                 }
             };
+        };
+
+        // See http://mongoosejs.com/docs/api.html#query_Query-lean.
+        LinvoDB.prototype.lean = function() {
+            // FIXME
+            return this;
+        };
+
+        LinvoDB.Cursor.prototype.lean = function() {
+            // FIXME
+            return this;
         };
     }
 };
