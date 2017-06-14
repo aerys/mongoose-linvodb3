@@ -37,4 +37,14 @@ describe('query', function() {
             done();
         });
     });
+
+    it('select from find query', function(done) {
+        model.find({}).select('test').exec((error, results) => {
+            assert.ifError(error);
+
+            // FIXME Select is unimplemented.
+
+            done();
+        });
+    });
 });

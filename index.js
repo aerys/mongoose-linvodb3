@@ -141,5 +141,10 @@ module.exports = {
             // FIXME
             return this;
         };
+
+        LinvoDB.Cursor.prototype.select = function() {
+            // FIXME Implement selection (projections).
+            return this;
+        };
     }
 };
