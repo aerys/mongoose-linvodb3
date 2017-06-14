@@ -34,15 +34,25 @@ module.exports = {
                 },
                 virtual: function(propertyName) {
                     {
+                        const schema = this;
+
                         return this._virtuals[propertyName] = {
                             get: function(fn) {
                                 this._getter = fn;
+                                return schema._virtuals[propertyName];
                             },
                             set: function(fn) {
                                 this._setter = fn;
+                                return schema._virtuals[propertyName];
                             }
                         };
                     }
+                },
+                set: function(param, value) {
+                    // Setter for options.
+                    // Not handled by LinvoDB.
+
+                    console.log('schema param', param, 'set to', value);
                 }
             });
         };
