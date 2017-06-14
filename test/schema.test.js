@@ -27,11 +27,23 @@ describe('schema', function() {
     });
 
     it('create simple schema', function(done) {
-        const schema = new Schema({
+        const Test = new Schema({
             test: String
         });
 
         done();
     });
-});
 
+    it('nested schemas', function(done) {
+        const SubSchema = new Schema({
+            x: Number
+        });
+
+        const Test = new Schema({
+            test: SubSchema,
+            extra: String
+        });
+
+        done();
+    });
+});

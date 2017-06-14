@@ -21,11 +21,15 @@ describe('Model', function() {
     });
 
     it('create simple Model', function(done) {
-        const schema = new Schema({
+        const Test = new Schema({
             test: String
         });
-        const model = mongoose.model('Test', schema);
+        const model = db.model('Test', Test);
 
+        done();
+    });
+
+    it('create model with nested schema', function(done) {
         done();
     });
 });
