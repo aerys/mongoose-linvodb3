@@ -29,7 +29,32 @@ describe('Model', function() {
         done();
     });
 
-    it('create model with nested schema', function(done) {
+    it('nested schemas', function(done) {
+        const SubSchema = new Schema({
+            x: Number
+        });
+
+        const Test = new Schema({
+            test: SubSchema,
+            extra: String
+        });
+
+        const model = db.model('Test', Test);
+
+        done();
+    });
+
+    it('schema with required field defaulting to null value', function(done) {
+        const Test = new mongoose.Schema({
+            test: {
+                type: String,
+                required: true,
+                default: null
+            }
+        });
+
+        const model = db.model('Test', Test);
+
         done();
     });
 });
