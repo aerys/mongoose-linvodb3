@@ -103,7 +103,8 @@ module.exports = {
                                 {
                                     model.emit('find', result);
 
-                                    return callback(error, result);
+                                    if (!!callback)
+                                        callback(error, result);
                                 }
                             ]);
                         };
