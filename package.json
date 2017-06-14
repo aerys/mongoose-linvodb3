@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/*.js"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +14,9 @@
     "linvodb3": "^3.25.0",
     "leveldown": "^1.7.2",
     "bson": "^1.0.4"
+  },
+  "devDependencies": {
+    "mocha": "3.2.0",
+    "power-assert": "1.4.1"
   }
 }
