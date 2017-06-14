@@ -75,7 +75,7 @@ module.exports = {
 
                     // FIXME Register event handlers ('error', ...).
                 },
-                Model: (name, schema, options) =>
+                model: (name, schema, options) =>
                 {
                     // if (!('_hooks' in schema))
                     //     schema = mongoose.schema(name, schema, options);
