@@ -46,4 +46,24 @@ describe('schema', function() {
 
         done();
     });
+
+    it('defining extra functions from options', function(done) {
+        let testFunctionInvokationCount = 0;
+
+        const Test = new Schema({
+            test: String
+        }, {
+            testFunction: () => ++testFunctionInvokationCount
+        });
+
+        const model = db.model('Test' + this.test.title, Test);
+
+        model.save({ test: 'test'}, (error, result) => {
+            assert.ifError(error);
+
+            result.testFunction();
+
+            assert.strictEqual(testFunctionInvokationCount, 1);
+        });
+    });
 });

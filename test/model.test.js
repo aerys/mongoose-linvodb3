@@ -24,7 +24,7 @@ describe('Model', function() {
         const Test = new Schema({
             test: String
         });
-        const model = db.model('Test', Test);
+        const model = db.model('Test' + this.test.title, Test);
 
         done();
     });
@@ -39,7 +39,7 @@ describe('Model', function() {
             extra: String
         });
 
-        const model = db.model('Test', Test);
+        const model = db.model('Test' + this.test.title, Test);
 
         done();
     });
@@ -53,7 +53,7 @@ describe('Model', function() {
             }
         });
 
-        const model = db.model('Test', Test);
+        const model = db.model('Test' + this.test.title, Test);
 
         done();
     });

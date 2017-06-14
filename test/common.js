@@ -8,6 +8,7 @@ require('../').install();
 
 var mongoose = require('mongoose'),
     Collection = mongoose.Collection,
+    url = require('url'),
     assert = require('power-assert'),
     queryCount = 0,
     opened = 0,
@@ -55,7 +56,13 @@ module.exports = function(options) {
  * testing uri
  */
 
-module.exports.uri = process.env.MONGOOSE_TEST_URI || 'mongoose-linvodb3_test';
+module.exports.uri = url.format({
+    protocol: 'mongodb',
+    slashes: true,
+    hostname: 'localhost',
+    port: 27017,
+    pathname: 'test'
+});;
 
 /**
  * expose mongoose

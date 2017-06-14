@@ -11,7 +11,7 @@ module.exports = {
             for (const field in schema)
                 delete schema[field].required;
 
-            Object.assign(this, {
+            Object.assign(this, options || {}, {
                 schema: schema,
                 _hooks: [],
                 _virtuals: {},
