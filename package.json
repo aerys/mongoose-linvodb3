@@ -12,6 +12,7 @@
   "dependencies": {
     "mongoose": "^4.6.3",
     "linvodb3": "^3.25.0",
-    "leveldown": "^1.7.2"
+    "leveldown": "^1.7.2",
+    "bson": "^1.0.4"
   }
 }

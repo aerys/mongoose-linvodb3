@@ -1,9 +1,9 @@
+const bson = require('bson');
 const mongoose = require('mongoose');
 const LinvoDB = require('linvodb3');
 
 module.exports = {
     install: function() {
-
         function SchemaConstructor(schema, options)
         {
             Object.assign(this, {
@@ -59,6 +59,10 @@ module.exports = {
 
         // Override mongoose.Schema constructor.
         mongoose.Schema = SchemaConstructor;
+
+        mongoose.Schema.Types = {
+            ObjectId: bson.ObjectID
+        };
 
         mongoose.createConnection = (uri, options) =>
         {
