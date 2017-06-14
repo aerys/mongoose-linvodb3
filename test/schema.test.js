@@ -73,4 +73,28 @@ describe('schema', function() {
             done();
         });
     });
+
+    it('post find', function(done) {
+        const Test = new Schema({
+            test: String
+        });
+
+        Test.post('find', function(doc, next) {
+            assert(doc);
+
+            assert.equal(typeof next, 'function');
+        });
+
+        const model = db.model('Test' + this.test.title, Test);
+
+        model.insert({ test: 'test' }, (error, result) => {
+            assert.ifError(error);
+
+            model.find({}, (error, result) => {
+                assert.ifError(error);
+
+                done();
+            });
+        });
+    });
 });

@@ -28,7 +28,7 @@ module.exports = {
                 },
                 post: function(action, callback) {
                     if (action === 'find')
-                        return this._hooks.push((model) => model.on('find', (result) => callback.apply(result, [() => null])));
+                        return this._hooks.push((model) => model.on('find', (result) => callback(result, () => null)));
                     if (action === 'insert')
                         return this._hooks.push((model) => model.on('inserted', (result) => callback.apply(result, [() => null])));
                     if (action === 'save')
