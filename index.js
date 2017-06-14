@@ -11,7 +11,7 @@ module.exports = {
             for (const field in schema)
                 delete schema[field].required;
 
-            Object.assign(this, options || {}, {
+            Object.assign(this, {
                 schema: schema,
                 _hooks: [],
                 _virtuals: {},
@@ -90,6 +90,16 @@ module.exports = {
                         hook(model);
 
                     model.on('construct', function(doc) {
+                        doc.toObject = function() {
+                            // FIXME See http://mongoosejs.com/docs/guide.html#toObject.
+                            return this;
+                        };
+
+                        doc.toJSON = function() {
+                            // FIXME See http://mongoosejs.com/docs/guide.html#toJSON.
+                            return this;
+                        };
+
                         for (const propertyName in schema._virtuals) {
                             if (!!schema._virtuals[propertyName]._getter)
                                 doc.__defineGetter__(propertyName, schema._virtuals[propertyName]._getter);
