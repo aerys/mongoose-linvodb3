@@ -45,6 +45,29 @@ describe('Model', function() {
         done();
     });
 
+    it('array of nested schemas', function(done) {
+        const SubSchema = new Schema({
+            x: Number
+        });
+
+        const Test = new Schema({
+            test: {
+                type: [SubSchema]
+            },
+            extra: String
+        });
+
+        const model = db.model('Test' + this.test.title, Test);
+
+        model.insert({ test: [ { x: 0 }, { x: 1 } ]}, (error, result) => {
+            assert.ifError(error);
+
+            assert(result);
+
+            done();
+        });
+    });
+
     it('schema with required field defaulting to null value', function(done) {
         const Test = new mongoose.Schema({
             test: {
@@ -88,9 +111,9 @@ describe('Model', function() {
 
                     assert(result);
                     assert.strictEqual(result.count, 2);
-                });
 
-                done();
+                    done();
+                });
             });
         });
     });
