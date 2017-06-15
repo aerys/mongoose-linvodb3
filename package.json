@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/*.js"
+    "test": "mocha test/*.test.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "mongoose": "^4.6.3",
-    "linvodb3": "https://github.com/Ivshti/linvodb3.git",
+    "linvodb3": "https://github.com/aerys/linvodb3.git#fix/schema-complex-array-type",
     "leveldown": "^1.7.2",
     "medeadown": "^1.1.8",
     "bson": "^1.0.4",
