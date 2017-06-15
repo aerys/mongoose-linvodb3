@@ -7,10 +7,14 @@ module.exports = {
     install: function() {
 
         function SchemaConstructor(schema, options) {
-            // Remove 'required' flag from schema, not supported
-            // by LinvoDB.
+            // Schemas features unsupported by LinvoDB.
+            const unsupportedFeatures = [
+                'required',
+                'enum'
+            ];
+
             for (const field in schema)
-                delete schema[field].required;
+                unsupportedFeatures.forEach(feature => delete schema[field][feature]);
 
             Object.assign(this, {
                 schema: schema,
