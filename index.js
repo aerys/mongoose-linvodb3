@@ -131,6 +131,21 @@ module.exports = {
             };
         };
 
+        // LinvoDB does not natively support findOneAndUpdate.
+        LinvoDB.prototype.findOneAndUpdate = function(query, doc, options, callback)
+        {
+            var self = this;
+            this.findOne(query, function (err, originalDocument) {
+                if (err)
+                    return callback(err);
+
+                self.update(query, doc, options, function(err, res)
+                {
+                    return callback(err, originalDocument);
+                });
+            });
+        };
+
         // See http://mongoosejs.com/docs/api.html#query_Query-lean.
         LinvoDB.prototype.lean = function() {
             // FIXME
