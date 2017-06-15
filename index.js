@@ -1,3 +1,4 @@
+const fs = require('fs');
 const bson = require('bson');
 const mongoose = require('mongoose');
 const LinvoDB = require('linvodb3');
@@ -69,7 +70,25 @@ module.exports = {
         });
 
         mongoose.createConnection = (uri, options) => {
-            LinvoDB.dbPath = options.dbPath;
+
+            options.storeBackend = options.storeBackend || 'medeadown';
+            options.dbPath = options.dbPath || 'default_db_path';
+
+            if (options.storeBackend === 'medeadown') {
+                // FIXME medeadown does not handle directory creation.
+
+                if (!fs.existsSync(options.dbPath))
+                    fs.mkdirSync(options.dbPath);
+            }
+
+            if (!!options) {
+
+                if (!!options.dbPath)
+                    LinvoDB.dbPath = options.dbPath;
+
+                if (!!options.storeBackend)
+                    LinvoDB.defaults.store = { db: require(options.storeBackend) };
+            }
 
             return {
                 close: () => {

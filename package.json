@@ -13,6 +13,7 @@
     "mongoose": "^4.6.3",
     "linvodb3": "https://github.com/Ivshti/linvodb3.git",
     "leveldown": "^1.7.2",
+    "medeadown": "^1.1.8",
     "bson": "^1.0.4"
   },
   "devDependencies": {
