@@ -19,10 +19,28 @@ const SCHEMA_UNSUPPORTED_FEATURES = [
 module.exports = {
     install: function() {
 
-        function SchemaConstructor(schema, options) {
+        function Schema(schema, options) {
 
             for (const field in schema)
                 SCHEMA_UNSUPPORTED_FEATURES.forEach(feature => delete schema[field][feature]);
+
+            for (const field in schema) {
+                let fieldType = schema[field].type;
+                let fieldTypeIsArray = false;
+
+                if (!fieldType)
+                    continue;
+
+                if (_.isArray(fieldType)) {
+                    fieldType = fieldType[0];
+                    fieldTypeIsArray = true;
+                }
+
+                if (!(fieldType instanceof Schema))
+                    continue;
+
+                schema[field].type = fieldTypeIsArray ? [fieldType.schema] : fieldType.schema;
+            }
 
             if (!!options) {
                 SCHEMA_OPERATORS.forEach(operator => {
@@ -90,7 +108,7 @@ module.exports = {
         };
 
         // Override mongoose.Schema constructor.
-        mongoose.Schema = SchemaConstructor;
+        mongoose.Schema = Schema;
 
         mongoose.Schema.Types = Object.assign(mongoose.Schema.Types || {}, {
             ObjectId: bson.ObjectID
