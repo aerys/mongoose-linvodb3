@@ -58,6 +58,42 @@ describe('Model', function() {
         done();
     });
 
+    describe('findOneAndUpdate', function() {
+
+        let Fruit, model;
+
+        before(function() {
+            Fruit = new mongoose.Schema({
+                name: String,
+                count: Number
+            });
+
+            model = db.model('Fruit findOneAndUpdate', Fruit);
+
+            model.insert({ name: 'apple', count: 1 }, (error, results) => {
+                assert.ifError(error);
+            });
+        });
+
+        it('findOneAndUpdate', function(done) {
+            model.findOneAndUpdate({ name: 'apple' }, { count: 2 }, {}, (error, result) => {
+                assert.ifError(error);
+
+                assert(result);
+                assert.strictEqual(result.count, 1);
+
+                model.findOne({ name: 'apple' }, (error, result) => {
+                    assert.ifError(error);
+
+                    assert(result);
+                    assert.strictEqual(result.count, 2);
+                });
+
+                done();
+            });
+        });
+    });
+
     describe('insert multiple documents', function() {
 
         let Fruit, model;
