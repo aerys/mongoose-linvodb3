@@ -124,4 +124,27 @@ describe('Model', function() {
             });
         });
     });
+
+    it('schema custom toObject operator', function(done) {
+        const Test = new Schema({
+            test: String
+        }, {
+            toObject: {
+                transform: function(doc, ret) {
+                    ret.test = 'complex';
+                }
+            }
+        });
+        const model = db.model('Test' + this.test.title, Test);
+
+        model.insert({ test: 'simple' }, (error, result) => {
+            assert.ifError(error);
+
+            assert(result);
+            assert.strictEqual(result.toObject().test, 'complex');
+            assert.strictEqual(result.test, 'simple');
+
+            done();
+        });
+    });
 });

@@ -47,33 +47,6 @@ describe('schema', function() {
         done();
     });
 
-    it('custom toObject option', function(done) {
-        const Test = new Schema({
-            test: String,
-            removedFromJSObject: String
-        }, {
-            toObject: {
-                virtuals: true,
-                transform: function(doc, ret) {
-                    delete ret.removedFromJSObject;
-                }
-            }
-        });
-
-        const model = db.model('Test' + this.test.title, Test);
-
-        model.insert({ test: 'test', removedFromJSObject: 'removed from JS Object' }, (error, result) => {
-            assert.ifError(error);
-
-            // FIXME
-
-            result.toObject();
-            // assert.strictEqual(result.toObject(), { test: 'test' });
-
-            done();
-        });
-    });
-
     it('post find', function(done) {
         const Test = new Schema({
             test: String

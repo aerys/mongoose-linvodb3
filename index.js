@@ -2,22 +2,45 @@ const fs = require('fs');
 const bson = require('bson');
 const mongoose = require('mongoose');
 const LinvoDB = require('linvodb3');
+const _ = require('lodash');
+
+// See http://mongoosejs.com/docs/guide.html#toObject.
+const SCHEMA_OPERATORS = [
+    'toObject',
+    'toJSON'
+];
+
+// Schemas features unsupported by LinvoDB.
+const SCHEMA_UNSUPPORTED_FEATURES = [
+    'required',
+    'enum'
+];
 
 module.exports = {
     install: function() {
 
         function SchemaConstructor(schema, options) {
-            // Schemas features unsupported by LinvoDB.
-            const unsupportedFeatures = [
-                'required',
-                'enum'
-            ];
 
             for (const field in schema)
-                unsupportedFeatures.forEach(feature => delete schema[field][feature]);
+                SCHEMA_UNSUPPORTED_FEATURES.forEach(feature => delete schema[field][feature]);
+
+            if (!!options) {
+                SCHEMA_OPERATORS.forEach(operator => {
+                    if (!options[operator])
+                        return;
+
+                    const transform = options[operator].transform;
+
+                    if (!transform)
+                        return;
+
+                    options[operator] = transform;
+                });
+            }
 
             Object.assign(this, {
                 schema: schema,
+                _operators: options || {},
                 _hooks: [],
                 _virtuals: {},
                 pre: function(action, callback) {
@@ -75,7 +98,11 @@ module.exports = {
 
         mongoose.createConnection = (uri, options) => {
 
-            options.storeBackend = options.storeBackend || 'medeadown';
+            if (!/^win/.test(process.platform)) { // !Windows
+                // Using pure-js medeadown store backend on Android by default.
+                options.storeBackend = options.storeBackend || 'medeadown';
+            }
+
             options.dbPath = options.dbPath || 'default_db_path';
 
             if (options.storeBackend === 'medeadown') {
@@ -113,15 +140,21 @@ module.exports = {
                         hook(model);
 
                     model.on('construct', function(doc) {
-                        doc.toObject = function() {
-                            // FIXME See http://mongoosejs.com/docs/guide.html#toObject.
-                            return this;
-                        };
 
-                        doc.toJSON = function() {
-                            // FIXME See http://mongoosejs.com/docs/guide.html#toJSON.
-                            return this;
-                        };
+                        SCHEMA_OPERATORS.forEach(operator => {
+                            const schemaOperator = schema._operators[operator];
+
+                            if (!schemaOperator)
+                                return;
+
+                            doc[operator] = function() {
+                                const transformedDoc = _.cloneDeep(this);
+
+                                schemaOperator(this, transformedDoc);
+
+                                return transformedDoc;
+                            };
+                        });
 
                         for (const propertyName in schema._virtuals) {
                             if (!!schema._virtuals[propertyName]._getter)
