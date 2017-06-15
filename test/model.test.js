@@ -57,4 +57,35 @@ describe('Model', function() {
 
         done();
     });
+
+    describe('insert multiple documents', function() {
+
+        let Fruit, model;
+
+        before(function() {
+            Fruit = new mongoose.Schema({
+                name: String
+            });
+
+            model = db.model('Fruit insert multiple documents', Fruit);
+
+            model.insert([
+                { name: 'apple' },
+                { name: 'banana' },
+                { name: 'kiwi' }
+            ], (error, results) => {
+                assert.ifError(error);
+            });
+        });
+
+        it('find documents', function(done) {
+            model.find({}).exec((error, results) => {
+                assert.ifError(error);
+
+                assert.deepEqual(results.map(result => result.name).sort(), ['apple', 'banana', 'kiwi']);
+
+                done();
+            });
+        });
+    });
 });
