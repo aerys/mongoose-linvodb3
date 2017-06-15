@@ -1,5 +1,6 @@
 const start = require('./common'),
     assert = require('power-assert'),
+    _ = require('lodash'),
     mongoose = start.mongoose,
     Schema = mongoose.Schema,
     ValidatorError = mongoose.Error.ValidatorError,
@@ -82,7 +83,7 @@ describe('Model', function() {
                 assert(result);
                 assert.strictEqual(result.count, 1);
 
-                model.findOne({ name: 'apple' }, (error, result) => {
+                model.findById({ _id: result._id }, (error, result) => {
                     assert.ifError(error);
 
                     assert(result);
@@ -119,6 +120,33 @@ describe('Model', function() {
                 assert.ifError(error);
 
                 assert.deepEqual(results.map(result => result.name).sort(), ['apple', 'banana', 'kiwi']);
+
+                done();
+            });
+        });
+    });
+
+    it('schema with array of String field type', function(done) {
+        const Test = new Schema({
+            tests: {
+                type: [String]
+            }
+        });
+        const model = db.model('Test' + this.test.title, Test);
+
+        const values = [ 'ga', 'bu', 'zo', 'meu' ];
+
+        model.insert({ tests: values }, (error, result) => {
+            assert.ifError(error);
+
+            assert(result);
+            assert(result._id);
+
+            model.findById(result._id, (error, result) => {
+                assert.ifError(error);
+
+                assert(result);
+                assert.deepEqual(result.tests, values);
 
                 done();
             });
