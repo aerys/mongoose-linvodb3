@@ -86,7 +86,7 @@ describe('Model', function() {
 
         let Fruit, model;
 
-        before(function() {
+        before(function(done) {
             Fruit = new mongoose.Schema({
                 name: String,
                 count: Number
@@ -96,6 +96,8 @@ describe('Model', function() {
 
             model.insert({ name: 'apple', count: 1 }, (error, results) => {
                 assert.ifError(error);
+
+                done();
             });
         });
 
@@ -106,7 +108,7 @@ describe('Model', function() {
                 assert(result);
                 assert.strictEqual(result.count, 1);
 
-                model.findById({ _id: result._id }, (error, result) => {
+                model.findById(result._id, (error, result) => {
                     assert.ifError(error);
 
                     assert(result);
@@ -122,7 +124,7 @@ describe('Model', function() {
 
         let Fruit, model;
 
-        before(function() {
+        before(function(done) {
             Fruit = new mongoose.Schema({
                 name: String
             });
@@ -135,6 +137,8 @@ describe('Model', function() {
                 { name: 'kiwi' }
             ], (error, results) => {
                 assert.ifError(error);
+
+                done();
             });
         });
 

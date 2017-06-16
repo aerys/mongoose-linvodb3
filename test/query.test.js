@@ -12,7 +12,7 @@ const start = require('./common'),
 describe('query', function() {
     let db, model;
 
-    before(function() {
+    before(function(done) {
         db = start();
 
         const Test = new Schema({
@@ -23,6 +23,8 @@ describe('query', function() {
 
         model.insert({ test: 'test' }, (error, result) => {
             assert.ifError(error);
+
+            done();
         });
     });
 
