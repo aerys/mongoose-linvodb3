@@ -58,14 +58,10 @@ module.exports = {
 
             Object.assign(this, {
                 schema: schema,
-                _operators: options || {},
-                _hooks: [],
-                _virtuals: {},
+                _operators: options || {}, // See http://mongoosejs.com/docs/guide.html#toObject.
+                _hooks: [], // See http://mongoosejs.com/docs/middleware.html.
+                _virtuals: {}, // See http://mongoosejs.com/docs/2.7.x/docs/virtuals.html.
                 pre: function(action, callback) {
-                    if (action === 'find')
-                        return this._hooks.push((model) => model.on('find', (result) => callback(result, () => null)));
-                    if (action === 'insert')
-                        return this._hooks.push((model) => model.on('insert', (result) => callback.apply(result, [() => null])));
                     if (action === 'save')
                         return this._hooks.push((model) => model.on('save', (result) => callback.apply(result, [() => null])));
                     if (action === 'remove')
@@ -75,12 +71,8 @@ module.exports = {
                 post: function(action, callback) {
                     if (action === 'find')
                         return this._hooks.push((model) => model.on('find', (result) => callback(result, () => null)));
-                    if (action === 'insert')
-                        return this._hooks.push((model) => model.on('inserted', (result) => callback.apply(result, [() => null])));
                     if (action === 'save')
                         return this._hooks.push((model) => model.on('updated', (result) => callback.apply(result, [() => null])));
-                    if (action === 'remove')
-                        return this._hooks.push((model) => model.on('removed', (result) => callback.apply(result, [() => null])));
                     throw 'Hook action ' + action + ' is unimplemented.';
                 },
                 virtual: function(propertyName) {
@@ -118,7 +110,8 @@ module.exports = {
 
             if (!/^win/.test(process.platform)) { // !Windows
                 // Using pure-js medeadown store backend on Android by default.
-                options.storeBackend = options.storeBackend || 'medeadown';
+                // Comment the following line to use native LevelDB backend.
+                // options.storeBackend = options.storeBackend || 'medeadown';
             }
 
             options.dbPath = options.dbPath || 'default_db_path';
@@ -144,9 +137,14 @@ module.exports = {
                     // FIXME
                 },
                 on: (event, callback) => {
-                    console.log(event, 'event registered');
+                    console.log('on', event, 'event registered');
 
                     // FIXME Register event handlers ('error', ...).
+                },
+                once: (event, callback) => {
+                    console.log('once', event, 'event registered');
+
+                    // FIXME Register event handlers ('open', ...).
                 },
                 model: (name, schema, options) => {
                     // if (!('_hooks' in schema))
@@ -154,6 +152,7 @@ module.exports = {
 
                     const model = new LinvoDB(name, schema.schema, options || {});
 
+                    // See http://mongoosejs.com/docs/middleware.html.
                     for (const hook of schema._hooks)
                         hook(model);
 
@@ -182,6 +181,8 @@ module.exports = {
                         }
                     });
 
+                    // LinvoDB does not natively support pre and post 'find'
+                    // events, which are handled here.
                     const findWrapper = function(funcName) {
                         const fn = model[funcName];
 
