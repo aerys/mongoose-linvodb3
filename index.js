@@ -24,6 +24,10 @@ module.exports = {
             for (const field in schema)
                 SCHEMA_UNSUPPORTED_FEATURES.forEach(feature => delete schema[field][feature]);
 
+            // Look for sub-schemas that were already processed
+            // to make those compatible to LinvoDB by forwarding
+            // their actual definition, stored under
+            // `schema[subSchemaField].schema`.
             for (const field in schema) {
                 let fieldType = schema[field].type;
                 let fieldTypeIsArray = false;
@@ -32,6 +36,7 @@ module.exports = {
                     continue;
 
                 if (_.isArray(fieldType)) {
+                    // Preserve array of sub-schema types.
                     fieldType = fieldType[0];
                     fieldTypeIsArray = true;
                 }
