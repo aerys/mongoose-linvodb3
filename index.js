@@ -121,12 +121,8 @@ module.exports = {
 
             options.dbPath = options.dbPath || 'default_db_path';
 
-            if (options.storeBackend === 'medeadown') {
-                // FIXME medeadown does not handle directory creation.
-
-                if (!fs.existsSync(options.dbPath))
-                    fs.mkdirSync(options.dbPath);
-            }
+            if (!fs.existsSync(options.dbPath))
+                fs.mkdirSync(options.dbPath);
 
             if (!!options) {
 
