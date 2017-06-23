@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "mongoose": "^4.6.3",
-    "linvodb3": "https://github.com/aerys/linvodb3.git#fix/schema-complex-array-type",
+    "linvodb3": "https://github.com/aerys/linvodb3.git",
     "leveldown": "^1.7.2",
     "medeadown": "^1.1.8",
     "bson": "^1.0.4",
