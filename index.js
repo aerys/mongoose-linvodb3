@@ -188,13 +188,33 @@ module.exports = {
                         const fn = model[funcName];
 
                         model[funcName] = function(query, callback) {
-                            return fn.apply(this, [query, (error, result) => {
-                                    model.emit('find', result);
+                            if (!!callback && typeof callback === 'function') {
+                                // Callback is passed to find thus invoking Cursor.exec immediately.
+                                return fn.apply(this, [query, (error, result) => {
+                                        model.emit('find', result);
 
-                                    if (!!callback)
-                                        callback(error, result);
-                                }
-                            ]);
+                                        if (!!callback)
+                                            callback(error, result);
+                                    }
+                                ]);
+                            } else {
+                                // Callback is not directly passed to find.
+                                // A Cursor is returned to be executed in a deferred way.
+                                // Overriding Cursor.execFn is required to propagate 'find' event.
+                                const cursor = fn.apply(this, [query]);
+                                const cursorExecFn = cursor.execFn;
+
+                                cursor.execFn = function(error, doc, callback) {
+                                    return cursorExecFn(error, doc, (error, result) => {
+                                        model.emit('find', result);
+
+                                        if (!!callback)
+                                            callback(error, result);
+                                    });
+                                };
+
+                                return cursor;
+                            }
                         };
                     };
 

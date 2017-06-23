@@ -32,6 +32,18 @@ describe('query', function() {
         db.close();
     });
 
+    it('query deferred exec', function(done) {
+        model.find({}).exec((error, results) => {
+            assert.ifError(error);
+
+            assert(results);
+            assert.strictEqual(results.length, 1);
+            assert.strictEqual(results[0].test, 'test');
+
+            done();
+        });
+    });
+
     it('lean find query', function(done) {
         model.find({}).lean().exec((error, results) => {
             assert.ifError(error);
