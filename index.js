@@ -228,6 +228,10 @@ module.exports = {
                     if (!model.collection)
                         model.collection = model;
 
+                    model.collection.initializeUnorderedBulkOp = function() {
+                        // Nothing intended.
+                    };
+
                     return model;
                 }
             };
