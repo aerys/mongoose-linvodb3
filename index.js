@@ -222,6 +222,12 @@ module.exports = {
                     findWrapper('findById');
                     findWrapper('findOne');
 
+                    // Make MongoDB-like api available through mongoose
+                    // model.collection (ie, 'myModel.collection.insert(...)').
+                    // 'insert' is not available from mongoose API.
+                    if (!model.collection)
+                        model.collection = model;
+
                     return model;
                 }
             };

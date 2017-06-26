@@ -82,6 +82,19 @@ describe('Model', function() {
         done();
     });
 
+    it('insert doc via MongoDB API model.collection.insert', function(done) {
+        const Test = new Schema({
+            test: String
+        });
+        const model = db.model('Test' + this.test.title, Test);
+
+        model.collection.insert({ test: 'test' }, (error, result) => {
+            assert.ifError(error);
+
+            done();
+        });
+    });
+
     describe('findOneAndUpdate', function() {
 
         let Fruit, model;
