@@ -16,12 +16,17 @@ describe('query', function() {
         db = start();
 
         const Test = new Schema({
-            test: String
+            test: String,
+            tests: [Number]
         });
 
         model = db.model('Test query', Test);
 
-        model.insert({ test: 'test' }, (error, result) => {
+        model.insert([
+            { test: 'test', tests: [ 0, 1 ] },
+            { test: 'test', tests: [ 10, 20 ] },
+            { test: 'test', tests: [ 100, 300 ] }
+        ], (error, result) => {
             assert.ifError(error);
 
             done();
@@ -37,7 +42,7 @@ describe('query', function() {
             assert.ifError(error);
 
             assert(results);
-            assert.strictEqual(results.length, 1);
+            assert.strictEqual(results.length, 3);
             assert.strictEqual(results[0].test, 'test');
 
             done();
@@ -57,6 +62,20 @@ describe('query', function() {
             assert.ifError(error);
 
             // FIXME Select is unimplemented.
+
+            done();
+        });
+    });
+
+    it('$elemMatch operator', function(done) {
+        model.find({ tests: { $elemMatch: { $gte: 5, $lt: 15 } } }, (error, results) => {
+            assert.ifError(error);
+
+            console.log(JSON.stringify(results));
+
+            assert(results);
+            assert.strictEqual(results.length, 1);
+            assert.deepEqual(results[0].tests, [ 10, 20 ]);
 
             done();
         });
