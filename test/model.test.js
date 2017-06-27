@@ -91,6 +91,11 @@ describe('Model', function() {
         model.collection.insert({ test: 'test' }, (error, result) => {
             assert.ifError(error);
 
+            assert(result);
+            assert.strictEqual(result.ops.length, 1);
+            assert(result.ops[0]);
+            assert.strictEqual(result.ops[0].test, 'test');
+
             done();
         });
     });
@@ -176,13 +181,14 @@ describe('Model', function() {
 
         const values = [ 'ga', 'bu', 'zo', 'meu' ];
 
-        model.insert({ tests: values }, (error, result) => {
+        model.collection.insert({ tests: values }, (error, result) => {
             assert.ifError(error);
 
             assert(result);
-            assert(result._id);
+            assert(result.ops);
+            assert(result.ops[0]._id);
 
-            model.findById(result._id, (error, result) => {
+            model.findById(result.ops[0]._id, (error, result) => {
                 assert.ifError(error);
 
                 assert(result);
@@ -209,8 +215,9 @@ describe('Model', function() {
             assert.ifError(error);
 
             assert(result);
-            assert.strictEqual(result.toObject().test, 'complex');
-            assert.strictEqual(result.test, 'simple');
+            assert(result.ops);
+            assert.strictEqual(result.ops[0].toObject().test, 'complex');
+            assert.strictEqual(result.ops[0].test, 'simple');
 
             done();
         });

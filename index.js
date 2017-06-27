@@ -162,8 +162,14 @@ module.exports = {
                         SCHEMA_OPERATORS.forEach(operator => {
                             const schemaOperator = schema._operators[operator];
 
-                            if (!schemaOperator)
+                            if (!schemaOperator) {
+                                doc[operator] = function() {
+                                    // Default operator.
+                                    // Nothing intended.
+                                    return this;
+                                }
                                 return;
+                            }
 
                             doc[operator] = function() {
                                 const transformedDoc = _.cloneDeep(this);
@@ -221,6 +227,17 @@ module.exports = {
                     findWrapper('find');
                     findWrapper('findById');
                     findWrapper('findOne');
+
+                    // Override Model.insert to return result
+                    // with MongoDB-like structure.
+                    const insertFn = model.insert;
+                    model.insert = function(doc, callback) {
+                        return insertFn.apply(this, [doc, (error, result) => {
+                            return callback(error, {
+                                ops: [result]
+                            });
+                        }]);
+                    };
 
                     // Make MongoDB-like api available through mongoose
                     // model.collection (ie, 'myModel.collection.insert(...)').
