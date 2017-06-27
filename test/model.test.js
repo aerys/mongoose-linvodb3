@@ -222,4 +222,47 @@ describe('Model', function() {
             done();
         });
     });
+
+    describe('query mutliple keys', function() {
+        let Test, model;
+
+        before(function(done) {
+            Test = new mongoose.Schema({
+                name: String,
+                kind: String,
+                parent: String,
+                count: {
+                    type: Number,
+                    default: 0,
+                    index: true
+                }
+            });
+
+            model = db.model('Test query mutliple keys', Test);
+
+            model.collection.insert([
+                { name: 't1', kind: 'k1', parent: 'p1' },
+                { name: 't2', kind: 'k2', parent: 'p1', count: 0 },
+                { name: 't3', kind: 'k2', parent: 'p1', count: 1 }
+            ], (error, results) => {
+                assert.ifError(error);
+
+                done();
+            });
+        });
+
+        it('findOne on multiple keys', function(done) {
+            model.findOne({ kind: 'k2', parent: 'p1', count: 1 }).exec((error, result) => {
+                assert.ifError(error);
+
+                assert(result);
+                assert.strictEqual(result.name, 't3');
+                assert.strictEqual(result.kind, 'k2');
+                assert.strictEqual(result.parent, 'p1');
+                assert.strictEqual(result.count, 1);
+
+                done();
+            });
+        });
+    });
 });
