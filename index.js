@@ -254,12 +254,14 @@ module.exports = {
 
         // See http://mongoosejs.com/docs/api.html#query_Query-lean.
         LinvoDB.prototype.lean = function() {
-            // FIXME
+            // Nothing intended.
+            // Results are already lean.
             return this;
         };
 
         LinvoDB.Cursor.prototype.lean = function() {
-            // FIXME
+            // Nothing intended.
+            // Results are already lean.
             return this;
         };
 
