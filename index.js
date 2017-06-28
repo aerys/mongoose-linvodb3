@@ -115,25 +115,25 @@ module.exports = {
 
         mongoose.createConnection = (uri, options) => {
 
+            const defaultOptions = {
+                filename: 'cache'
+            };
+
+            // Default options.
+            options = options || defaultOptions;
+
             if (!/^win/.test(process.platform)) { // !Windows
                 // Using pure-js medeadown store backend on Android by default.
                 // Comment the following line to use native LevelDB backend.
                 // options.storeBackend = options.storeBackend || 'medeadown';
             }
 
-            options.dbPath = options.dbPath || 'cache';
+            const filename = options.filename;
 
-            if (!fs.existsSync(options.dbPath))
-                fs.mkdirSync(options.dbPath);
+            LinvoDB.dbPath = filename;
 
-            if (!!options) {
-
-                if (!!options.dbPath)
-                    LinvoDB.dbPath = options.dbPath;
-
-                if (!!options.storeBackend)
-                    LinvoDB.defaults.store = { db: require(options.storeBackend) };
-            }
+            if (!!options.storeBackend)
+                LinvoDB.defaults.store = { db: require(options.storeBackend) };
 
             return {
                 close: () => {
@@ -149,16 +149,21 @@ module.exports = {
 
                     // FIXME Register event handlers ('open', ...).
                 },
-                model: (name, schema, options) => {
+                model: (name, schema) => {
                     // if (!('_hooks' in schema))
                     //     schema = mongoose.schema(name, schema, options);
 
-                    const key = (options.filename || options.dbPath || '')  + '/' + name;
+                    const modelFilename = filename || defaultOptions.filename + '/' + name + '.db';
+                    const key = modelFilename;
 
                     if (key in models)
                         return models[key];
 
-                    const model = new LinvoDB(name, schema.schema, options || {});
+                    const options = {
+                        filename: modelFilename
+                    };
+
+                    const model = new LinvoDB(name, schema.schema, options);
 
                     models[key] = model;
 
