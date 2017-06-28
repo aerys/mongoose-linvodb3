@@ -1,4 +1,5 @@
 const start = require('./common'),
+    async = require('async'),
     assert = require('power-assert'),
     mongoose = start.mongoose,
     Schema = mongoose.Schema,
@@ -10,7 +11,7 @@ const start = require('./common'),
     MongooseError = mongoose.Error;
 
 describe('query', function() {
-    let db, model;
+    let db, model, complexModel;
 
     before(function(done) {
         db = start();
@@ -20,13 +21,31 @@ describe('query', function() {
             tests: [Number]
         });
 
-        model = db.model('Test query', Test);
+        const ComplexTest = new Schema({
+            test: String,
+            tests: [{
+                values: [Number]
+            }]
+        });
 
-        model.insert([
-            { test: 'test', tests: [ 0, 1 ] },
-            { test: 'test', tests: [ 10, 20 ] },
-            { test: 'test', tests: [ 100, 300 ] }
-        ], (error, result) => {
+        model = db.model('Test query', Test);
+        complexModel = db.model('ComplexTest query', ComplexTest);
+
+        async.waterfall([
+            (callback) => {
+                return model.insert([
+                    { test: 'test', tests: [ 0, 1 ] },
+                    { test: 'test', tests: [ 10, 20 ] },
+                    { test: 'test', tests: [ 100, 300 ] }
+                ], (error, result) => callback(error));
+            }, (callback) => {
+                return complexModel.insert([
+                    { test: 'test', tests: [ { values: [ 0, 1 ] }, { values: [ 2, 3 ] } ] },
+                    { test: 'test', tests: [ { values: [ 10, 20 ] } ] },
+                    { test: 'test', tests: [ { values: [ 100, 300 ] } ] }
+                ], (error, result) => callback(error));
+            }
+        ], (error, callback) => {
             assert.ifError(error);
 
             done();
@@ -67,13 +86,24 @@ describe('query', function() {
         });
     });
 
-    it('$elemMatch operator', function(done) {
+    it('$elemMatch operator simple case', function(done) {
         model.find({ tests: { $elemMatch: { $gte: 5, $lt: 15 } } }, (error, results) => {
             assert.ifError(error);
 
             assert(results);
             assert.strictEqual(results.length, 1);
             assert.deepEqual(results[0].tests, [ 10, 20 ]);
+
+            done();
+        });
+    });
+
+    it('$elemMatch operator complex case', function(done) {
+        model.find({ tests: { $elemMatch: { values: { $in: [ 10, 100 ] } } } }, (error, results) => {
+            assert.ifError(error);
+
+            assert(results);
+            assert.strictEqual(results.length, 2);
 
             done();
         });
