@@ -233,6 +233,19 @@ module.exports = {
                                     });
                                 };
 
+                                // Cursor.remove is unimplemented by LinvoDB.
+                                // See http://mongoosejs.com/docs/api.html#query_Query-remove.
+                                if (!cursor.remove) {
+                                    cursor.remove = (filter, callback) => {
+                                        if (filter && typeof filter === 'function') {
+                                            callback = filter;
+                                            filter = {};
+                                        }
+
+                                        return model.remove(filter, {}, callback);
+                                    };
+                                }
+
                                 return cursor;
                             }
                         };

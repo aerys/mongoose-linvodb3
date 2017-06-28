@@ -71,13 +71,27 @@ describe('query', function() {
         model.find({ tests: { $elemMatch: { $gte: 5, $lt: 15 } } }, (error, results) => {
             assert.ifError(error);
 
-            console.log(JSON.stringify(results));
-
             assert(results);
             assert.strictEqual(results.length, 1);
             assert.deepEqual(results[0].tests, [ 10, 20 ]);
 
             done();
+        });
+    });
+
+    it('Cursor remove operator', function(done) {
+        model.findOne({}).remove((error, result) => {
+            assert.ifError(error);
+
+            assert.strictEqual(result, 1);
+
+            model.count({}, (error, result) => {
+                assert.ifError(error);
+
+                assert.strictEqual(result, 2);
+
+                done();
+            });
         });
     });
 });
