@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const bson = require('bson');
 const mongoose = require('mongoose');
 const LinvoDB = require('linvodb3');
@@ -131,6 +132,10 @@ module.exports = {
             const filename = options.filename;
 
             LinvoDB.dbPath = filename;
+
+            const dbDirName = path.dirname(LinvoDB.dbPath);
+            if (!fs.existsSync(dbDirName))
+                fs.mkdirSync(dbDirName);
 
             if (!!options.storeBackend)
                 LinvoDB.defaults.store = { db: require(options.storeBackend) };
@@ -282,15 +287,13 @@ module.exports = {
         };
 
         // LinvoDB does not natively support findOneAndUpdate.
-        LinvoDB.prototype.findOneAndUpdate = function(query, doc, options, callback)
-        {
+        LinvoDB.prototype.findOneAndUpdate = function(query, doc, options, callback) {
             var self = this;
             this.findOne(query, function (err, originalDocument) {
                 if (err)
                     return callback(err);
 
-                self.update(query, doc, options, function(err, res)
-                {
+                self.update(query, doc, options, function(err, res) {
                     return callback(err, originalDocument);
                 });
             });
