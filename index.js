@@ -16,6 +16,8 @@ const SCHEMA_UNSUPPORTED_FEATURES = [
     'enum'
 ];
 
+const models = {};
+
 module.exports = {
     install: function() {
 
@@ -119,7 +121,7 @@ module.exports = {
                 // options.storeBackend = options.storeBackend || 'medeadown';
             }
 
-            options.dbPath = options.dbPath || 'default_db_path';
+            options.dbPath = options.dbPath || 'cache';
 
             if (!fs.existsSync(options.dbPath))
                 fs.mkdirSync(options.dbPath);
@@ -151,7 +153,14 @@ module.exports = {
                     // if (!('_hooks' in schema))
                     //     schema = mongoose.schema(name, schema, options);
 
+                    const key = (options.filename || options.dbPath || '')  + '/' + name;
+
+                    if (key in models)
+                        return models[key];
+
                     const model = new LinvoDB(name, schema.schema, options || {});
+
+                    models[key] = model;
 
                     // See http://mongoosejs.com/docs/middleware.html.
                     for (const hook of schema._hooks)
@@ -267,6 +276,13 @@ module.exports = {
                     return callback(err, originalDocument);
                 });
             });
+        };
+
+        LinvoDB.prototype.close = function() {
+            // FIXME
+            // this.resetIndexes();
+            // this.store.close();
+            // this.initStore();
         };
 
         // See http://mongoosejs.com/docs/api.html#query_Query-lean.
