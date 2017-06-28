@@ -130,8 +130,7 @@ module.exports = {
             }
 
             const filename = options.filename;
-
-            LinvoDB.dbPath = filename;
+            LinvoDB.dbPath = filename || defaultOptions.filename;
 
             const dbDirName = path.dirname(LinvoDB.dbPath);
             if (!fs.existsSync(dbDirName))
