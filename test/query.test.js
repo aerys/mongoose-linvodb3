@@ -33,13 +33,13 @@ describe('query', function() {
 
         async.waterfall([
             (callback) => {
-                return model.insert([
+                return model.collection.insert([
                     { test: 'test', tests: [ 0, 1 ] },
                     { test: 'test', tests: [ 10, 20 ] },
                     { test: 'test', tests: [ 100, 300 ] }
                 ], (error, result) => callback(error));
             }, (callback) => {
-                return complexModel.insert([
+                return complexModel.collection.insert([
                     { test: 'test', tests: [ { values: [ 0, 1 ] }, { values: [ 2, 3 ] } ] },
                     { test: 'test', tests: [ { values: [ 10, 20 ] } ] },
                     { test: 'test', tests: [ { values: [ 100, 300 ] } ] }
