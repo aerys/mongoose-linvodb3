@@ -136,8 +136,25 @@ module.exports = {
             if (!fs.existsSync(dbDirName))
                 fs.mkdirSync(dbDirName);
 
-            if (!!options.storeBackend)
-                LinvoDB.defaults.store = { db: require(options.storeBackend) };
+            if (!!options.encode && !!options.decode) {
+                const codec = {
+                    encode: options.encode,
+                    decode: options.decode,
+                    buffer: false,
+                    type: 'Custom codec'
+                };
+
+                LinvoDB.defaults.store = Object.assign(LinvoDB.defaults.store || {}, {
+                    keyEncoding: codec,
+                    valueEncoding: codec
+                });
+            }
+
+            if (!!options.storeBackend) {
+                LinvoDB.defaults.store = Object.assign(LinvoDB.defaults.store || {}, {
+                    db: require(options.storeBackend)
+                });
+            }
 
             return {
                 close: () => {
