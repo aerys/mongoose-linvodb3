@@ -339,5 +339,9 @@ module.exports = {
             // FIXME Implement selection (projections).
             return this;
         };
+
+        LinvoDB.prototype.createNewId = function() {
+            return new bson.ObjectID().toString();
+        };
     }
 };
