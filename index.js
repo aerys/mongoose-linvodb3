@@ -314,7 +314,7 @@ module.exports = {
                 if (err)
                     return callback(err);
 
-                self.update(query, doc, options, function(err, res) {
+                self.update(query, doc, options || {}, function(err, res) {
                     return callback(err, originalDocument);
                 });
             });

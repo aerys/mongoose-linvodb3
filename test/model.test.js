@@ -107,7 +107,8 @@ describe('Model', function() {
         before(function(done) {
             Fruit = new mongoose.Schema({
                 name: String,
-                count: Number
+                count: Number,
+                varieties: [String]
             });
 
             model = db.model('Fruit findOneAndUpdate', Fruit);
@@ -120,21 +121,51 @@ describe('Model', function() {
         });
 
         it('findOneAndUpdate', function(done) {
-            model.findOneAndUpdate({ name: 'apple' }, { count: 2 }, (error, result) => {
+            model.findOneAndUpdate({ name: 'apple' }, { $set: { count: 2 } }, (error, result) => {
                 assert.ifError(error);
 
                 assert(result);
+                assert.strictEqual(result.name, 'apple');
                 assert.strictEqual(result.count, 1);
 
                 model.findById(result._id, (error, result) => {
                     assert.ifError(error);
 
                     assert(result);
+                    assert.strictEqual(result.name, 'apple');
                     assert.strictEqual(result.count, 2);
 
                     done();
                 });
             });
+        });
+
+        it('findOneAndUpdate with $push, $each and $set operators', function(done) {
+            model.findOneAndUpdate({ name: 'apple' }, {
+                $set: { count: 3 },
+                $push: {
+                    varieties: {
+                        $each: [ 'reinette' ]
+                    }
+                }}, (error, result) => {
+                    assert.ifError(error);
+
+                    assert(result);
+                    assert.strictEqual(result.name, 'apple');
+                    assert.strictEqual(result.count, 2);
+                    assert.strictEqual(result.varieties.length, 0);
+
+                    model.findById(result._id, (error, result) => {
+                        assert.ifError(error);
+
+                        assert(result);
+                        assert.strictEqual(result.name, 'apple');
+                        assert.strictEqual(result.count, 3);
+                        assert.deepEqual(result.varieties, ['reinette']);
+
+                        done();
+                    });
+                });
         });
     });
 
