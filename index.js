@@ -304,6 +304,11 @@ module.exports = {
 
         // LinvoDB does not natively support findOneAndUpdate.
         LinvoDB.prototype.findOneAndUpdate = function(query, doc, options, callback) {
+            if (!!options && typeof options === 'function') {
+                callback = options;
+                options = undefined;
+            }
+
             var self = this;
             this.findOne(query, function (err, originalDocument) {
                 if (err)
@@ -311,6 +316,24 @@ module.exports = {
 
                 self.update(query, doc, options, function(err, res) {
                     return callback(err, originalDocument);
+                });
+            });
+        };
+
+        // LinvoDB does not natively support findOneAndRemove.
+        LinvoDB.prototype.findOneAndRemove = function(query, options, callback) {
+            if (!!options && typeof options === 'function') {
+                callback = options;
+                options = undefined;
+            }
+
+            var self = this;
+            this.findOne(query, function (err, originalDocument) {
+                if (err)
+                    return callback(err);
+
+                originalDocument.remove(function(err, res) {
+                    return callback(err, res);
                 });
             });
         };

@@ -120,7 +120,7 @@ describe('Model', function() {
         });
 
         it('findOneAndUpdate', function(done) {
-            model.findOneAndUpdate({ name: 'apple' }, { count: 2 }, {}, (error, result) => {
+            model.findOneAndUpdate({ name: 'apple' }, { count: 2 }, (error, result) => {
                 assert.ifError(error);
 
                 assert(result);
@@ -131,6 +131,49 @@ describe('Model', function() {
 
                     assert(result);
                     assert.strictEqual(result.count, 2);
+
+                    done();
+                });
+            });
+        });
+    });
+
+    describe('findOneAndRemove', function() {
+
+        let Fruit, model;
+
+        before(function(done) {
+            Fruit = new mongoose.Schema({
+                name: String,
+                count: Number
+            });
+
+            model = db.model('Fruit findOneAndRemove', Fruit);
+
+            model.insert([
+                { name: 'apple', count: 1 },
+                { name: 'banana', count: 2 }
+            ], (error, results) => {
+                assert.ifError(error);
+
+                done();
+            });
+        });
+
+        it('findOneAndRemove', function(done) {
+            model.findOneAndRemove({ name: 'apple' }, (error, result) => {
+                assert.ifError(error);
+
+                assert(result);
+                assert.strictEqual(result, 1);
+
+                model.find({}, (error, result) => {
+                    assert.ifError(error);
+
+                    assert(result);
+                    assert.strictEqual(result.length, 1);
+                    assert.strictEqual(result[0].name, 'banana');
+                    assert.strictEqual(result[0].count, 2);
 
                     done();
                 });
