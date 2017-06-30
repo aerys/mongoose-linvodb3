@@ -32,11 +32,14 @@ module.exports = {
             // their actual definition, stored under
             // `schema[subSchemaField].schema`.
             for (const field in schema) {
-                let fieldType = schema[field].type;
-                let fieldTypeIsArray = false;
+                const useComplexNotation = 'type' in schema;
 
-                if (!fieldType)
+                let fieldType = useComplexNotation ? schema[field].type : schema[field];
+
+                if (!fieldType || !_.isArray(fieldType) || typeof fieldType !== 'object')
                     continue;
+
+                let fieldTypeIsArray = false;
 
                 if (_.isArray(fieldType)) {
                     // Preserve array of sub-schema types.
@@ -47,7 +50,16 @@ module.exports = {
                 if (!(fieldType instanceof Schema))
                     continue;
 
-                schema[field].type = fieldTypeIsArray ? [fieldType.schema] : fieldType.schema;
+                let normalizedFieldType = fieldTypeIsArray ? [fieldType.schema] : fieldType.schema;
+
+                if (useComplexNotation) {
+                    schema[field].type = normalizedFieldType;
+                }
+                else {
+                    schema[field] = {
+                        type: normalizedFieldType
+                    };
+                }
             }
 
             if (!!options) {
