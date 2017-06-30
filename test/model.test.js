@@ -107,7 +107,8 @@ describe('Model', function() {
         before(function(done) {
             Variety = new mongoose.Schema({
                 origin: String,
-                naming: String
+                naming: String,
+                description: Object
             });
 
             Fruit = new mongoose.Schema({
@@ -150,7 +151,7 @@ describe('Model', function() {
                 $set: { count: 3 },
                 $push: {
                     varieties: {
-                        $each: [ { origin: 'france', naming: 'reinette' } ]
+                        $each: [ { origin: 'france', naming: 'reinette', description: { size: 'big' } } ]
                     }
                 }}, (error, result) => {
                     assert.ifError(error);
@@ -169,6 +170,8 @@ describe('Model', function() {
                         assert.strictEqual(result.varieties.length, 1);
                         assert.strictEqual(result.varieties[0].origin, 'france');
                         assert.strictEqual(result.varieties[0].naming, 'reinette');
+                        assert(result.varieties[0].description);
+                        assert.strictEqual(result.varieties[0].description.size, 'big');
 
                         done();
                     });
