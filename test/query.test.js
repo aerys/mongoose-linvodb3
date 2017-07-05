@@ -34,15 +34,15 @@ describe('query', function() {
         async.waterfall([
             (callback) => {
                 return model.collection.insert([
-                    { test: 'test', tests: [ 0, 1 ] },
-                    { test: 'test', tests: [ 10, 20 ] },
-                    { test: 'test', tests: [ 100, 300 ] }
+                    { test: 'test1', tests: [ 0, 1 ] },
+                    { test: 'test2', tests: [ 10, 20 ] },
+                    { test: 'test3', tests: [ 100, 300 ] }
                 ], (error, result) => callback(error));
             }, (callback) => {
                 return complexModel.collection.insert([
-                    { test: 'test', tests: [ { values: [ 0, 1 ] }, { values: [ 2, 3 ] } ] },
-                    { test: 'test', tests: [ { values: [ 10, 20 ] } ] },
-                    { test: 'test', tests: [ { values: [ 100, 300 ] } ] }
+                    { test: 'test1', tests: [ { values: [ 0, 1 ] }, { values: [ 2, 3 ] } ] },
+                    { test: 'test2', tests: [ { values: [ 10, 20 ] } ] },
+                    { test: 'test3', tests: [ { values: [ 100, 300 ] } ] }
                 ], (error, result) => callback(error));
             }
         ], (error, callback) => {
@@ -62,7 +62,7 @@ describe('query', function() {
 
             assert(results);
             assert.strictEqual(results.length, 3);
-            assert.strictEqual(results[0].test, 'test');
+            assert.strictEqual(results[0].test, 'test1');
 
             done();
         });
@@ -92,6 +92,7 @@ describe('query', function() {
 
             assert(results);
             assert.strictEqual(results.length, 1);
+            assert.strictEqual(results[0].test, 'test2');
             assert.deepEqual(results[0].tests, [ 10, 20 ]);
 
             done();
@@ -99,11 +100,13 @@ describe('query', function() {
     });
 
     it('$elemMatch operator complex case', function(done) {
-        model.find({ tests: { $elemMatch: { values: { $in: [ 10, 100 ] } } } }, (error, results) => {
+        complexModel.find({ tests: { $elemMatch: { values: { $in: [ 10, 100 ] } } } }, (error, results) => {
             assert.ifError(error);
 
             assert(results);
             assert.strictEqual(results.length, 2);
+            assert.strictEqual(results[0].test, 'test2');
+            assert.strictEqual(results[1].test, 'test3');
 
             done();
         });
