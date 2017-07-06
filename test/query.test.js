@@ -34,9 +34,9 @@ describe('query', function() {
         async.waterfall([
             (callback) => {
                 return model.collection.insert([
-                    { test: 'test1', tests: [ 0, 1 ] },
-                    { test: 'test2', tests: [ 10, 20 ] },
-                    { test: 'test3', tests: [ 100, 300 ] }
+                    { test: 'test1', tests: [ 0, 1 ], size: 1 },
+                    { test: 'test2', tests: [ 10, 20 ], size: 10 },
+                    { test: 'test3', tests: [ 100, 300 ], size: 100 }
                 ], (error, result) => callback(error));
             }, (callback) => {
                 return complexModel.collection.insert([
@@ -107,6 +107,19 @@ describe('query', function() {
             assert.strictEqual(results.length, 2);
             assert.strictEqual(results[0].test, 'test2');
             assert.strictEqual(results[1].test, 'test3');
+
+            done();
+        });
+    });
+
+    it('multiple keys with a $in operator', function(done) {
+        model.find({ test: 'test1', size: { $in: [ 1, 100 ] } }).lean().exec((error, results) => {
+            assert.ifError(error);
+
+            assert(results);
+            assert.strictEqual(results.length, 1);
+            assert.strictEqual(results[0].test, 'test1');
+            assert.strictEqual(results[0].size, 1);
 
             done();
         });
