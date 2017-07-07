@@ -82,6 +82,28 @@ describe('Model', function() {
         done();
     });
 
+    it('schema with Date type', function(done) {
+        const Test = new mongoose.Schema({
+            test: Date
+        });
+
+        const model = db.model('Test' + this.test.title, Test);
+
+        model.collection.insert({ test: Date.now() }, (error, results) => {
+            assert.ifError(error);
+
+            model.find({}, (error, results) => {
+                assert.ifError(error);
+
+                assert(results);
+                assert.strictEqual(results.length, 1);
+                assert.strictEqual(typeof results[0].test, 'Date');
+
+                done();
+            });
+        });
+    });
+
     it('insert doc via MongoDB API model.collection.insert', function(done) {
         const Test = new Schema({
             test: String

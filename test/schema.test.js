@@ -47,6 +47,14 @@ describe('schema', function() {
         done();
     });
 
+    it('schema with Date type', function(done) {
+        const Test = new Schema({
+            visited: Date
+        });
+
+        done();
+    });
+
     it('post find', function(done) {
         const Test = new Schema({
             test: String
