@@ -97,7 +97,7 @@ describe('Model', function() {
 
                 assert(results);
                 assert.strictEqual(results.length, 1);
-                assert.strictEqual(typeof results[0].test, 'Date');
+                assert(results[0].test instanceof Date);
 
                 done();
             });
