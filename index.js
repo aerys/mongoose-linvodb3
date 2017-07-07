@@ -174,7 +174,7 @@ module.exports = {
 
             return {
                 close: () => {
-                    // FIXME
+                    // FIXME Close all open models.
                 },
                 on: (event, callback) => {
                     console.log('on', event, 'event registered');
@@ -355,7 +355,10 @@ module.exports = {
         };
 
         LinvoDB.prototype.close = function() {
-            // FIXME
+            // FIXME Clean resources in a way that ensure model
+            // will be in a valid state when re-opening it.
+            // See https://github.com/Level/levelup#close.
+
             // this.resetIndexes();
             // this.store.close();
             // this.initStore();
