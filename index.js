@@ -14,7 +14,11 @@ const SCHEMA_OPERATORS = [
 // Schemas features unsupported by LinvoDB.
 const SCHEMA_UNSUPPORTED_FEATURES = [
     'required',
-    'enum'
+    'enum',
+    // LinvoDB already defines get/set accessors which
+    // perform strict type validation from schema definition.
+    'get',
+    'set'
 ];
 
 const models = {};
