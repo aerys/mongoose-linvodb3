@@ -52,10 +52,15 @@ describe('schema', function() {
             test: String
         });
 
-        Test.post('find', function(doc, next) {
+        let postFindHookCalled = 0;
+
+        Test.post('find', function(doc) {
             assert(doc);
 
-            assert.equal(typeof next, 'function');
+            assert.strictEqual(doc.length, 1);
+            assert.strictEqual(doc[0].test, 'test');
+
+            ++postFindHookCalled;
         });
 
         const model = db.model('Test' + this.test.title, Test);
@@ -65,6 +70,8 @@ describe('schema', function() {
 
             model.find({}, (error, result) => {
                 assert.ifError(error);
+
+                assert.strictEqual(postFindHookCalled, 1);
 
                 done();
             });
