@@ -10,12 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mongoose": "^4.6.3",
-    "linvodb3": "https://github.com/aerys/linvodb3.git",
-    "leveldown": "^1.7.2",
-    "medeadown": "^1.1.8",
     "bson": "^1.0.4",
-    "lodash": "4.16.2"
+    "leveldown": "^1.7.2",
+    "linvodb3": "https://github.com/aerys/linvodb3.git",
+    "lodash": "4.16.2",
+    "medeadown": "^1.1.8",
+    "mongoose": "^4.6.3",
+    "rimraf": "^2.6.1"
   },
   "devDependencies": {
     "mocha": "^3.2.0",

@@ -47,6 +47,14 @@ describe('schema', function() {
         done();
     });
 
+    it('schema with Date type', function(done) {
+        const Test = new Schema({
+            visited: Date
+        });
+
+        done();
+    });
+
     it('post find', function(done) {
         const Test = new Schema({
             test: String
@@ -73,6 +81,29 @@ describe('schema', function() {
 
                 assert.strictEqual(postFindHookCalled, 1);
 
+                done();
+            });
+        });
+    });
+
+    it('use ObjectId type', function(done) {
+        const Test = new Schema({
+            testField: mongoose.Schema.Types.ObjectId
+        });
+
+        const model = db.model('Test' + this.test.title, Test);
+
+        let stringObjectId = '597b629a8e43d2234d7c0284';
+        model.insert({ testField: new ObjectId(stringObjectId) }, (error, result) => {
+            assert.ifError(error);
+
+            model.find({}, (error, result) => {
+                assert.ifError(error);
+
+                assert.notEqual(result, null);
+                assert.strictEqual(result.length, 1);
+                assert.strictEqual(result[0].testField, stringObjectId);
+                
                 done();
             });
         });
