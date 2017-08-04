@@ -93,8 +93,8 @@ describe('schema', function() {
 
         const model = db.model('Test' + this.test.title, Test);
 
-        let stringObjectId = '597b629a8e43d2234d7c0284';
-        model.insert({ testField: new ObjectId(stringObjectId) }, (error, result) => {
+        let objectId = new ObjectId();
+        model.insert({ testField: objectId }, (error, result) => {
             assert.ifError(error);
 
             model.find({}, (error, result) => {
@@ -102,8 +102,9 @@ describe('schema', function() {
 
                 assert.notEqual(result, null);
                 assert.strictEqual(result.length, 1);
-                assert.strictEqual(result[0].testField, stringObjectId);
-                
+                assert.strictEqual(result[0].testField, objectId.toString());
+                assert.strictEqual(result[0].testField.toString(), objectId.toString());
+
                 done();
             });
         });

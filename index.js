@@ -40,6 +40,13 @@ module.exports = {
 
                 let fieldType = useComplexNotation ? schema[field].type : schema[field];
 
+                // ObjectId will be considered as String like _id fields
+                if (fieldType === mongoose.Schema.Types.ObjectId)
+                {
+                    schema[field] = String;
+                    continue;
+                }
+
                 if (!fieldType || !_.isArray(fieldType) || typeof fieldType !== 'object')
                     continue;
 
