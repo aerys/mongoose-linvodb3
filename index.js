@@ -361,6 +361,12 @@ module.exports = {
             });
         };
 
+        // http://mongoosejs.com/docs/api.html#model_Model.ensureIndexes
+        LinvoDB.prototype.ensureIndexes = function(callback) {
+            this.buildIndexes(!!callback && typeof callback === 'function' ? callback : () => {});
+            return this;
+        };
+
         LinvoDB.prototype.close = function() {
             // FIXME Clean resources in a way that ensure model
             // will be in a valid state when re-opening it.
