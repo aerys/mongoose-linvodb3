@@ -163,7 +163,7 @@ module.exports = {
                 const codec = {
                     encode: options.encode,
                     decode: options.decode,
-                    buffer: false,
+                    buffer: true,
                     type: 'Custom codec'
                 };
 
