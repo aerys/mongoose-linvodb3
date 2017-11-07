@@ -18,7 +18,8 @@ describe('query', function() {
 
         const Test = new Schema({
             test: String,
-            tests: [Number]
+            tests: [Number],
+            props: Object
         });
 
         const ComplexTest = new Schema({
@@ -34,7 +35,7 @@ describe('query', function() {
         async.waterfall([
             (callback) => {
                 return model.collection.insert([
-                    { test: 'test1', tests: [ 0, 1 ], size: 1 },
+                    { test: 'test1', tests: [ 0, 1 ], size: 1, props: [ { key: 'prop1', value: 'val1' }, { key: 'prop2', value: 'val2' } ] },
                     { test: 'test2', tests: [ 10, 20 ], size: 10 },
                     { test: 'test3', tests: [ 100, 300 ], size: 100 }
                 ], (error, result) => callback(error));
@@ -77,10 +78,28 @@ describe('query', function() {
     });
 
     it('select from find query', function(done) {
-        model.find({}).select('test').exec((error, results) => {
+        model.find({}).select({ 'test': 1 }).lean().exec((error, results) => {
             assert.ifError(error);
 
-            // FIXME Select is unimplemented.
+            assert(results);
+            assert.strictEqual(results.length, 3);
+            assert.deepEqual(JSON.stringify(results[0]), JSON.stringify({ test: 'test1' }));
+            assert.deepEqual(JSON.stringify(results[1]), JSON.stringify({ test: 'test2' }));
+            assert.deepEqual(JSON.stringify(results[2]), JSON.stringify({ test: 'test3' }));
+
+            done();
+        });
+    });
+
+    it('select with elemMatch from find query', function(done) {
+        model.find({}).select({ 'props': { $elemMatch: { key: 'prop2' } }}).lean().exec((error, results) => {
+            assert.ifError(error);
+
+            assert(results);
+            assert.strictEqual(results.length, 3);
+            assert.deepEqual(JSON.stringify(results[0]), JSON.stringify({ props: [ { key: 'prop2', value: 'val2' } ]}));
+            assert.deepEqual(JSON.stringify(results[1]), JSON.stringify({ props: {} }));
+            assert.deepEqual(JSON.stringify(results[2]), JSON.stringify({ props: {} }));
 
             done();
         });

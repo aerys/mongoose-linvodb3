@@ -251,9 +251,19 @@ module.exports = {
                     const findWrapper = function(funcName) {
                         const fn = model[funcName];
 
-                        model[funcName] = function(query, callback) {
+                        model[funcName] = function(query, projection, callback) {
+                            if (!!projection && typeof projection === 'function') {
+                                // There is no set projection
+                                callback = projection;
+                                projection = undefined;
+                            }
+
                             if (!!callback && typeof callback === 'function') {
                                 // Callback is passed to find thus invoking Cursor.exec immediately.
+
+                                if (!!projection)
+                                    throw new Error('Projection method is unimplemented on Model must be called on a Cursor object');
+
                                 return fn.apply(this, [query, (error, result) => {
                                         model.emit('find', result);
 
@@ -289,6 +299,9 @@ module.exports = {
                                         return model.remove(filter, {}, callback);
                                     };
                                 }
+
+                                if (!!projection)
+                                    cursor.select(projection);
 
                                 return cursor;
                             }
@@ -375,24 +388,6 @@ module.exports = {
             // this.resetIndexes();
             // this.store.close();
             // this.initStore();
-        };
-
-        // See http://mongoosejs.com/docs/api.html#query_Query-lean.
-        LinvoDB.prototype.lean = function() {
-            // Nothing intended.
-            // Results are already lean.
-            return this;
-        };
-
-        LinvoDB.Cursor.prototype.lean = function() {
-            // Nothing intended.
-            // Results are already lean.
-            return this;
-        };
-
-        LinvoDB.Cursor.prototype.select = function() {
-            // FIXME Implement selection (projections).
-            return this;
         };
 
         LinvoDB.prototype.createNewId = function() {
