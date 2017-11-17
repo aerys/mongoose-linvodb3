@@ -21,8 +21,6 @@ const SCHEMA_UNSUPPORTED_FEATURES = [
     'set'
 ];
 
-const models = {};
-
 module.exports = {
     install: function() {
 
@@ -200,16 +198,11 @@ module.exports = {
                     const modelFilename = filename || defaultOptions.filename + '/' + name + '.db';
                     const key = modelFilename;
 
-                    if (key in models)
-                        return models[key];
-
                     const options = {
                         filename: modelFilename
                     };
 
                     const model = new LinvoDB(name, schema.schema, options);
-
-                    models[key] = model;
 
                     // See http://mongoosejs.com/docs/middleware.html.
                     for (const hook of schema._hooks)
