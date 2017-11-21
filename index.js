@@ -166,7 +166,6 @@ module.exports = {
                 };
 
                 LinvoDB.defaults.store = Object.assign(LinvoDB.defaults.store || {}, {
-                    keyEncoding: codec,
                     valueEncoding: codec
                 });
             }
