@@ -122,8 +122,6 @@ module.exports = {
                 },
                 set: function(param, value) {
                     // FIXME Setter for options.
-
-                    console.log('schema param', param, 'set to', value);
                 }
             });
         };
@@ -181,13 +179,9 @@ module.exports = {
                     // FIXME Close all open models.
                 },
                 on: (event, callback) => {
-                    console.log('on', event, 'event registered');
-
                     // FIXME Register event handlers ('error', ...).
                 },
                 once: (event, callback) => {
-                    console.log('once', event, 'event registered');
-
                     // FIXME Register event handlers ('open', ...).
                 },
                 model: (name, schema) => {
