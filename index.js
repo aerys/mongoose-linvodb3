@@ -359,6 +359,12 @@ module.exports = {
             this._pipe.pause();
             this._retrQueue.pause();
 
+            this._pipe.queue = [];
+            this._retrQueue.queue = [];
+
+            this._pipe.active = 0;
+            this._retrQueue.active = 0;
+
             // See https://github.com/Level/levelup#close.
             this.store.close();
         };
