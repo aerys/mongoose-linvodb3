@@ -354,6 +354,11 @@ module.exports = {
         };
 
         LinvoDB.prototype.close = function() {
+            // Stop the bagpipes.
+            // This disable any action that will be applied.
+            this._pipe.stop();
+            this._retrQueue.stop();
+
             // See https://github.com/Level/levelup#close.
             this.store.close();
         };
