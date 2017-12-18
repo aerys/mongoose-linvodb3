@@ -12,7 +12,7 @@
   "dependencies": {
     "bson": "^1.0.4",
     "leveldown": "^1.7.2",
-    "linvodb3": "https://github.com/aerys/linvodb3.git#fix/not-empty-bagpipe",
+    "linvodb3": "https://github.com/aerys/linvodb3.git",
     "lodash": "4.16.2",
     "medeadown": "^1.1.8",
     "mongoose": "^4.6.3",
