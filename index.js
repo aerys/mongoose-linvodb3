@@ -95,14 +95,22 @@ module.exports = {
                         return this._hooks.push((model) => model.on('save', (result) => callback.apply(result, [() => null])));
                     if (action === 'remove')
                         return this._hooks.push((model) => model.on('remove', (result) => callback.apply(result, [() => null])));
-                    throw 'Hook action ' + action + ' is unimplemented.';
+                    console.warn(`Hook action 'pre ${action}' is unimplemented.`);
                 },
                 post: function(action, callback) {
                     if (action === 'find')
                         return this._hooks.push((model) => model.on('find', (result) => callback(result, () => null)));
                     if (action === 'save')
                         return this._hooks.push((model) => model.on('updated', (result) => callback.apply(result, [() => null])));
-                    throw 'Hook action ' + action + ' is unimplemented.';
+                    // Note regarding "post remove" hooks:
+                    // the "removed" event of linvodb3's Model is called
+                    // with an array of ObjectIds of the removed documents.
+                    // As such, the "post remove" may not be executed with
+                    // the actual removed document, as expected by mongoose
+                    // which is left unimplemented.
+                    // To prevent raising an uncaught exception is the client's code,
+                    // a warning is simply outputted.
+                    console.warn(`Hook action 'post ${action}' is unimplemented.`);
                 },
                 virtual: function(propertyName) {
                     {
