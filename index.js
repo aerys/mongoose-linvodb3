@@ -15,6 +15,7 @@ const SCHEMA_OPERATORS = [
 const SCHEMA_UNSUPPORTED_FEATURES = [
     'required',
     'enum',
+    'validate',
     // LinvoDB already defines get/set accessors which
     // perform strict type validation from schema definition.
     'get',
