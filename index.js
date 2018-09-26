@@ -77,7 +77,9 @@ module.exports = {
                     if (!options[operator])
                         return;
 
-                    const transform = options[operator].transform;
+                    // https://mongoosejs.com/docs/api.html#document_Document-toObject
+                    const defaultTransform = (doc, ret, opt) => ret;
+                    const transform = options[operator].transform || defaultTransform;
 
                     if (!transform)
                         return;
